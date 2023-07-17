@@ -12,12 +12,11 @@ public class FilmeController : ControllerBase
     private static int id = 0;
 
     [HttpPost]
-    public void AdicionaFilme([FromBody] Filme filme)
+    public IActionResult AdicionaFilme([FromBody] Filme filme)
     {
         filme.Id = id++;
         filmes.Add(filme);
-        Console.WriteLine(filme.Titulo);
-        Console.WriteLine(filme.Duracao);
+        return CreatedAtAction(nameof(FilmeId), new { id = filme.Id });
     }
 
     [HttpGet]
@@ -27,8 +26,11 @@ public class FilmeController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public Filme? FilmeId([FromRoute]int id)
+    public IActionResult FilmeId([FromRoute]int id)
     {
-        return filmes.FirstOrDefault(x => x.Id == id);
+        var filme = filmes.FirstOrDefault(x => x.Id == id);
+        if (filme == null)
+            return NotFound();
+        return Ok(filme);
     }
 }
